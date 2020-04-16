@@ -1,0 +1,90 @@
+box: "node:6.10"
+build:
+  steps:
+    -
+      script:
+        code: "npm install"
+        name: "A step that executes `npm install` command"
+    -
+      script:
+        code: "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj \"/CN=nginxsvc/O=nginxsvc\""
+        name: "Create TLS key and cert"
+deploy-to-oke:
+  box:
+    cmd: /bin/sh
+    id: alpine
+  steps:
+    - bash-template
+    -
+      script:
+        code: "cat kubertetes-deployment.yml"
+        name: "Visualise Kubernetes config"
+    -
+      kubectl:
+        command: "create namespace $WERCKER_APPLICATION_OWNER_NAME"
+        insecure-skip-tls-verify: true
+        name: "create namespace"
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+    -
+      kubectl:
+        command: "create secret docker-registry wrelease --docker-server=wcr.io --docker-username=$WERCKER_APPLICATION_OWNER_NAME --docker-password=$KUBERNETES_TOKEN --docker-email=${WERCKER_APPLICATION_OWNER_NAME}@mail.com --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        insecure-skip-tls-verify: true
+        name: "create OCR secret"
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+    -
+      kubectl:
+        command: "create secret tls tls-secret --key $WERCKER_ROOT/tls.key --cert $WERCKER_ROOT/tls.crt --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        insecure-skip-tls-verify: true
+        name: "create TLS secret"
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+    -
+      kubectl:
+        command: "create -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        insecure-skip-tls-verify: true
+        name: "create deployment"
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+    -
+      script:
+        code: "cat ingress.yml"
+        name: "Visualise Ingress config"
+    -
+      kubectl:
+        command: "create -f $WERCKER_ROOT/ingress.yml --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        insecure-skip-tls-verify: true
+        name: "create ingress configuration"
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+    -
+      script:
+        code: "cat ingress.yml"
+        name: "Visualise Ingress config"
+functional-test:
+  steps:
+    -
+      script:
+        code: |-
+            mkdir -p "/pipeline"
+            node $WERKER_ROOT/app.js &
+            sleep 5
+            SIMPLE_APP_URL=http://localhost:3000/simple-app
+            echo 'Microservice URL=' $SIMPLE_APP_URL
+            if curl -X POST -H "Content-Type: application/json" -X POST -d '{"simple-param":"John","param2":"Doe"}' $SIMPLE_APP_URL |grep "simple"
+            then
+                # if the key password is in the content
+                echo "Test passed"
+            else
+                echo "Test failed"
+                exit -1
+            fi
+            sleep 1
+
+        name: "Visualise Ingress config"
+
+
+
+
+
