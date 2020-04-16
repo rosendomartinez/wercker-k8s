@@ -33,13 +33,13 @@ deploy-to-oke:
         #name: "create OCR secret"
         #server: $KUBERNETES_MASTER
         #token: $KUBERNETES_TOKEN
-    -
-      kubectl:
-        command: "create secret tls tls-secret --key $WERCKER_ROOT/tls.key --cert $WERCKER_ROOT/tls.crt --namespace=$WERCKER_APPLICATION_OWNER_NAME"
-        insecure-skip-tls-verify: true
-        name: "create TLS secret"
-        server: $KUBERNETES_MASTER
-        token: $KUBERNETES_TOKEN
+    #-
+      #kubectl:
+        #command: "create secret tls tls-secret --key $WERCKER_ROOT/tls.key --cert $WERCKER_ROOT/tls.crt --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        #insecure-skip-tls-verify: true
+        #name: "create TLS secret"
+        #server: $KUBERNETES_MASTER
+        #token: $KUBERNETES_TOKEN
     -
       kubectl:
         command: "create -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$WERCKER_APPLICATION_OWNER_NAME"
