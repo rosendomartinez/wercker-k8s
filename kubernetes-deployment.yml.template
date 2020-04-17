@@ -36,9 +36,10 @@ metadata:
     #service.beta.kubernetes.io/oci-load-balancer-shape: "400Mbps"
     #service.beta.kubernetes.io/oci-load-balancer-subnet1: "ocid1.subnet.oc1.iad.aaaaaaaaw6ucrln46vwjuphkdn7tjlvykk24gzigvlbmegprp2xqrcbmchqa"
 spec:
+  type: NodePort
   selector:
     run: rest-simpleapp
   ports:
     - port: 8088
       targetPort: 3000
-type: NodePort
+  
