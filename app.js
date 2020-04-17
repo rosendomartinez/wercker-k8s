@@ -31,7 +31,7 @@ app.get('/stuff', function (req,res) {
         "squadName": "Raymond Job en Frank",
         "homeTown": "Metro Citys",
         "formed": 2016,
-        "active" true,
+        "active":true,
         "members": [
            {
              "name": "Molecule Man",
@@ -67,7 +67,7 @@ app.get('/stuff', function (req,res) {
            }
          ]
        }
-     res.end(JSON.stringify(stuff);
+     res.end(JSON.stringify(stuff));
 });
 
 handlePost = 
