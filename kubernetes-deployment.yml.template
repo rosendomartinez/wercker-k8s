@@ -5,6 +5,9 @@ metadata:
   labels:
     run: rest-simpleapp
 spec:
+  selector:
+    matchLabels:
+      run: helloworld
   replicas: 1
   strategy:
     rollingUpdate:
