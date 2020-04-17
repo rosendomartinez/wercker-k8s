@@ -42,7 +42,7 @@ deploy-to-oke:
         #token: $KUBERNETES_TOKEN
     -
       kubectl:
-        command: "create -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$WERCKER_APPLICATION_OWNER_NAME"
+        command: "create -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$WERCKER_APPLICATION_OWNER_NAME" --validate=false
         insecure-skip-tls-verify: true
         name: "create deployment"
         server: $KUBERNETES_MASTER
